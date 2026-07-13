@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/db.ts","./src/main.tsx","./src/store.ts","./src/types.ts","./src/utils.ts","./src/pages/Calendar.tsx","./src/pages/Dashboard.tsx","./src/pages/Focus.tsx","./src/pages/Settings.tsx","./src/pages/Stats.tsx","./src/pages/Todo.tsx","./src/pages/Weight.tsx"],"errors":true,"version":"5.9.3"}
