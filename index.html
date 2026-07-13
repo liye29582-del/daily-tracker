@@ -164,5 +164,431 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   </head>
   <body>
     <div id="root"></div>
-  </body>
+  <script>/* ============================================
+   常记 v0.8 优化补丁 (精简版)
+   1. 纯色弹窗
+   2. 首页快速记录弹窗同步
+   3. 体重折线图始终显示
+   4. 弹窗viewport居中
+   5. Onboarding增加体重记录
+   6. 全局隐藏滚动条
+   ============================================ */
+
+(function() {
+  'use strict';
+
+  // ---- CSS ----
+  var styleEl = document.createElement('style');
+  styleEl.textContent = [
+    /* 全局隐藏滚动条 */
+    'html,body{scrollbar-width:none!important;-ms-overflow-style:none!important}',
+    'html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}',
+
+    /* 快速记录弹窗 - 复用 App 原生 glass-* 玻璃拟态风格 */
+    '.qr-overlay{position:fixed;inset:0;z-index:200;background:rgba(45,27,78,0.35);display:flex;align-items:center;justify-content:center;padding:1rem}',
+    /* .qr-modal 复用 .glass-modal 容器（尺寸/圆角/纯白底由 app CSS + 上方 .glass-modal 规则提供），此处仅补布局 */
+    '.qr-modal{display:flex;flex-direction:column}',
+    '.qr-modal h3{font-family:"Noto Serif SC",serif;font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:#2d1b4e}',
+    '.qr-field{margin-bottom:0.85rem}',
+    '.qr-field>label{display:block;font-size:0.7rem;color:#2d1b4e80;margin-bottom:0.35rem;font-weight:500;letter-spacing:0.02em}',
+    '.qr-mood-row{display:flex;gap:0.5rem;margin-bottom:0.9rem}',
+    '.qr-mood-btn{display:flex;flex-direction:column;align-items:center;gap:0.12rem;flex:1;min-width:0;padding:0.55rem 0.2rem;border-radius:1rem;font-size:0.72rem;line-height:1.15;cursor:pointer;transition:all .15s;background:#ffffff40;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.35);color:#2d1b4e}',
+    '.qr-mood-btn:hover{background:#fff6;transform:translateY(-1px)}',
+    '.qr-mood-btn.sel{background:#b85a7a!important;border-color:#b85a7a!important;color:#fff!important}',
+    '.qr-btns{display:flex;gap:0.6rem;margin-top:1.1rem}',
+    '.qr-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#2d1b4e;color:#fff;padding:0.6rem 1.2rem;border-radius:2rem;font-size:0.82rem;z-index:300;animation:qrIn 0.3s ease,qrOut 0.3s ease 1.5s forwards;box-shadow:0 8px 24px rgba(0,0,0,0.2)}',
+    '@keyframes qrIn{from{opacity:0;transform:translateX(-50%) translateY(1rem)}to{opacity:1;transform:translateX(-50%) translateY(0)}}',
+    '@keyframes qrOut{from{opacity:1}to{opacity:0;transform:translateX(-50%) translateY(0.5rem)}}',
+
+    /* 首页内容上移留白，保持居中 */
+    '.cj-home-push .max-w-2xl{padding-top:3.5rem!important}',
+
+    /* 纯色弹窗 - 处理所有弹窗类型，包括 onboarding 的 glass-modal */
+    '[role="dialog"]{background-color:rgba(255,255,255,0.98)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}',
+    '[role="dialog"] .glass-card{background:rgba(248,250,252,0.98)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1px solid #e2e8f0!important}',
+    '.glass-modal{background-color:rgba(255,255,255,0.98)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1px solid rgba(255,255,255,0.98)!important}',
+
+    /* 弹窗视口居中 - 仅作用于 role=dialog 弹窗，不动 onboarding 内部布局 */
+    '[role="dialog"]{display:flex!important;align-items:center!important;justify-content:center!important;position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;overflow-y:auto!important;z-index:50!important}',
+    '[role="dialog"]>div{max-height:90vh!important;overflow-y:auto!important;margin:auto!important;width:90%;max-width:480px}',
+
+    /* 体重图表容器始终可见 */
+    '.weight-chart-wrapper{display:block!important;min-height:200px}',
+    '.recharts-responsive-container{min-height:200px!important}',
+  ].join('\n');
+  document.head.appendChild(styleEl);
+
+  // ---- UTILS ----
+  function gs(k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch(e) { return fb; } }
+  function ss(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+
+  function getRoute() {
+    // App uses BrowserRouter; detect route from multiple signals
+    // Priority: 1) hash, 2) active nav link, 3) pathname fallback
+    var pages = ['/', '/weight', '/todo', '/focus', '/journal', '/notes', '/stats', '/settings'];
+
+    // Check hash first
+    if (window.location.hash && window.location.hash.length > 1) {
+      var h = window.location.hash.replace('#', '');
+      if (pages.indexOf(h) >= 0) return h;
+    }
+
+    // Check active nav link (most reliable for BrowserRouter)
+    var navLinks = document.querySelectorAll('nav a, aside a');
+    for (var i = 0; i < navLinks.length; i++) {
+      var a = navLinks[i];
+      var href = a.getAttribute('href') || '';
+      // Active nav usually has bold/highlighted text or specific class
+      var style = window.getComputedStyle(a);
+      if ((style.fontWeight > 500 || style.color === 'rgb(30, 27, 75)' ||
+           a.classList.contains('font-semibold') || a.classList.contains('text-brand-900')) &&
+          pages.indexOf(href) >= 0) {
+        return href;
+      }
+    }
+
+    // Fallback: extract from pathname (handles /daily-tracker/ style paths)
+    var path = window.location.pathname;
+    // Strip filename if accessing .html directly
+    if (path.indexOf('.html') > 0) {
+      return '/';
+    }
+    // Match known routes from end of pathname
+    for (var j = 0; j < pages.length; j++) {
+      if (path === pages[j] || path.endsWith(pages[j] + '/') || path.endsWith(pages[j])) {
+        return pages[j];
+      }
+    }
+
+    return '/';
+  }
+
+  // ---- QUICK RECORD MODAL ----
+  function showQuickRecord() {
+    var existing = document.querySelector('.qr-overlay');
+    if (existing) existing.remove();
+    
+    var today = new Date().toISOString().split('T')[0];
+    var selectedMood = null;
+    
+    var overlay = document.createElement('div');
+    overlay.className = 'qr-overlay';
+    overlay.innerHTML = [
+      '<div class="qr-modal glass-modal">',
+      '<h3>📝 快速记录</h3>',
+      '<div class="qr-field"><label>今日心情</label>',
+      '<div class="qr-mood-row">',
+      '<button class="qr-mood-btn" data-m="1">😫<br>很差</button>',
+      '<button class="qr-mood-btn" data-m="2">😟<br>不太好</button>',
+      '<button class="qr-mood-btn" data-m="3">😐<br>一般</button>',
+      '<button class="qr-mood-btn" data-m="4">😊<br>不错</button>',
+      '<button class="qr-mood-btn" data-m="5">🥰<br>很好</button>',
+      '</div></div>',
+      '<div class="qr-field"><label>饮水（杯）</label><input type="number" class="glass-input qr-water" placeholder="0" min="0" step="1" value="0"></div>',
+      '<div class="qr-field"><label>排便（次）</label><input type="number" class="glass-input qr-bowel" placeholder="0" min="0" step="1" value="0"></div>',
+      '<div class="qr-field"><label>备注</label><input class="glass-input qr-note" placeholder="随便写点什么..."></div>',
+      '<div class="qr-btns"><button class="qr-cancel glass-btn" style="flex:1">取消</button><button class="qr-save glass-btn-primary" style="flex:1">保存记录</button></div>',
+      '</div>'
+    ].join('');
+    document.body.appendChild(overlay);
+    
+    // Mood selection
+    overlay.querySelectorAll('.qr-mood-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        overlay.querySelectorAll('.qr-mood-btn').forEach(function(b){ b.classList.remove('sel'); });
+        this.classList.add('sel');
+        selectedMood = parseInt(this.getAttribute('data-m'));
+      });
+    });
+    
+    // Cancel
+    overlay.querySelector('.qr-cancel').addEventListener('click', function(){ overlay.remove(); });
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.remove(); });
+    
+    // Save
+    overlay.querySelector('.qr-save').addEventListener('click', function(){
+      var wVal = parseInt(overlay.querySelector('.qr-water').value) || 0;
+      var bVal = parseInt(overlay.querySelector('.qr-bowel').value) || 0;
+      var note = overlay.querySelector('.qr-note').value.trim();
+      var now = Date.now();
+      
+      // Save to the app's own localStorage keys so the journal page syncs automatically
+      if (selectedMood) {
+        var moods = gs('dt_moods', []);
+        moods.push({ date: today, value: selectedMood, createdAt: now, id: now + '_mood' });
+        ss('dt_moods', moods);
+      }
+      if (wVal > 0) {
+        var intakes = gs('dt_intakes', []);
+        intakes.push({ date: today, kind: 'water', amount: wVal * 250, createdAt: now, id: now + '_water' });
+        ss('dt_intakes', intakes);
+      }
+      if (bVal > 0) {
+        var bowels = gs('dt_bowels', []);
+        // App uses per-date aggregation: update existing or push new
+        var existing = bowels.find(function(r){ return r.date === today; });
+        if (existing) {
+          existing.count = bVal;
+          existing.createdAt = now;
+        } else {
+          bowels.push({ date: today, count: bVal, createdAt: now, id: now + '_bowel' });
+        }
+        ss('dt_bowels', bowels);
+      }
+      if (note) {
+        var notes = gs('dt_notes', []);
+        notes.push({ date: today, content: note, createdAt: now, id: now + '_note' });
+        ss('dt_notes', notes);
+      }
+      
+      overlay.remove();
+      
+      // Toast
+      var toast = document.createElement('div');
+      toast.className = 'qr-toast';
+      toast.textContent = '✅ 记录已保存，数据已同步';
+      document.body.appendChild(toast);
+      setTimeout(function(){ toast.remove(); }, 2000);
+    });
+  }
+
+  // ---- HOME CONTENT PUSH (下移留白，保持居中) ----
+  function applyHomePush() {
+    var main = document.querySelector('main');
+    if (!main) return;
+    if (getRoute() === '/') {
+      main.classList.add('cj-home-push');
+    } else {
+      main.classList.remove('cj-home-push');
+    }
+  }
+
+  // ---- INTERCEPT HOME JOURNAL CARD CLICK ----
+  function interceptHomeJournalCard() {
+    if (getRoute() !== '/') return;
+    var main = document.querySelector('main');
+    if (!main) return;
+    var buttons = main.querySelectorAll('button.glass-card');
+    buttons.forEach(function(btn){
+      if (btn.dataset.cjIntercepted) return;
+      var t = btn.textContent || '';
+      if (t.indexOf('记录') >= 0 && t.indexOf('心情') >= 0) {
+        btn.dataset.cjIntercepted = '1';
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          showQuickRecord();
+        }, true);
+      }
+    });
+  }
+
+  // ---- WEIGHT CHART (fixed overlay) ----
+  var chartOverlay = null;
+  
+  function createChartOverlay() {
+    if (chartOverlay) return;
+    chartOverlay = document.createElement('div');
+    chartOverlay.style.cssText = 'position:fixed;z-index:15;opacity:0;transition:opacity 0.3s;pointer-events:auto;background:rgba(255,255,255,0.92);border-radius:1rem;padding:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid rgba(255,255,255,0.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none';
+    chartOverlay.innerHTML = '<div class="text-sm font-medium mb-3" style="font-family:Noto Serif SC,serif;color:#1e1b4b">体重趋势（近 30 天）</div><canvas id="wc-canvas" style="width:100%;height:200px"></canvas>';
+    document.body.appendChild(chartOverlay);
+  }
+  
+  function positionChartOverlay() {
+    if (!chartOverlay) return;
+    if (getRoute() !== '/weight') {
+      chartOverlay.style.display = 'none';
+      chartOverlay.style.opacity = '0';
+      return;
+    }
+    
+    var mainInner = document.querySelector('main .max-w-2xl');
+    if (!mainInner || mainInner.innerHTML.length < 100) {
+      chartOverlay.style.display = 'none';
+      return;
+    }
+    
+    // Position the chart after the form, before history
+    var form = mainInner.querySelector('form');
+    var historySection = mainInner.querySelector('.mt-4');
+    var refEl = historySection || form;
+    if (!refEl) return;
+    
+    var rect = refEl.getBoundingClientRect();
+    var mainRect = mainInner.getBoundingClientRect();
+    
+    chartOverlay.style.display = 'block';
+    chartOverlay.style.opacity = '1';
+    chartOverlay.style.top = (rect.bottom + 12) + 'px';
+    chartOverlay.style.left = (mainRect.left + 16) + 'px';
+    chartOverlay.style.width = Math.min(mainRect.width - 32, 640) + 'px';
+    chartOverlay.style.maxWidth = '640px';
+    
+    setTimeout(drawChart, 200);
+  }
+  
+  function injectWeightChart() {
+    createChartOverlay();
+    positionChartOverlay();
+  }
+  
+  function drawChart() {
+    var canvas = document.getElementById('wc-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var parent = canvas.parentElement;
+    var w = parent.clientWidth || 600;
+    var h = 200;
+    canvas.width = w * 2; canvas.height = h * 2;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.scale(2, 2);
+    
+    var pad = { top: 20, right: 20, bottom: 30, left: 45 };
+    var cw = w - pad.left - pad.right;
+    var ch = h - pad.top - pad.bottom;
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    var logs = gs('changji-weight', []);
+    
+    // Grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (var i = 0; i <= 4; i++) {
+      var y = pad.top + (ch / 4) * i;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+    }
+    
+    if (logs.length === 0) {
+      ctx.fillStyle = '#94a3b8'; ctx.font = '13px "Noto Serif SC",serif'; ctx.textAlign = 'center';
+      ctx.fillText('记录体重后将展示趋势图', w/2, h/2);
+      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, h-pad.bottom); ctx.lineTo(w-pad.right, h-pad.bottom); ctx.stroke();
+      return;
+    }
+    
+    var sorted = logs.slice().sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+    var vals = sorted.map(function(v){ return v.weight; });
+    var minV = Math.min.apply(null, vals) - 1;
+    var maxV = Math.max.apply(null, vals) + 1;
+    var range = maxV - minV || 1;
+    
+    // Axes
+    ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, h-pad.bottom); ctx.lineTo(w-pad.right, h-pad.bottom); ctx.stroke();
+    
+    // Labels
+    ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    for (var i = 0; i <= 4; i++) {
+      ctx.fillText((maxV - (range/4)*i).toFixed(1), pad.left - 5, pad.top + (ch/4)*i + 3);
+    }
+    
+    // Line
+    ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.beginPath();
+    sorted.forEach(function(e, i){
+      var x = pad.left + (cw / Math.max(sorted.length-1, 1)) * i;
+      var y = pad.top + ch - ((e.weight - minV) / range) * ch;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    
+    // Fill
+    var grad = ctx.createLinearGradient(0, pad.top, 0, h-pad.bottom);
+    grad.addColorStop(0, 'rgba(99,102,241,0.2)'); grad.addColorStop(1, 'rgba(99,102,241,0)');
+    ctx.lineTo(pad.left + cw, h-pad.bottom); ctx.lineTo(pad.left, h-pad.bottom); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+    
+    // Dots
+    sorted.forEach(function(e, i){
+      var x = pad.left + (cw / Math.max(sorted.length-1, 1)) * i;
+      var y = pad.top + ch - ((e.weight - minV) / range) * ch;
+      ctx.fillStyle = '#6366f1'; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+    });
+  }
+
+  // ---- ONBOARDING ENHANCEMENT ----
+  function enhanceOnboarding() {
+    var btns = document.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].textContent.trim() === '开始使用') {
+        var weightInput = document.querySelector('input[placeholder="如 62.5"]');
+        if (weightInput && !weightInput.parentElement.querySelector('.ob-note')) {
+          var note = document.createElement('div');
+          note.className = 'ob-note';
+          note.textContent = '记录体重用于 BMI 计算与趋势分析';
+          note.style.cssText = 'font-size:0.7rem;color:#94a3b8;margin-top:0.15rem;';
+          weightInput.closest('div').appendChild(note);
+        }
+        break;
+      }
+    }
+  }
+
+  // ---- 灵感页：插入图片按钮（图标换线性SVG，文字改"图片"） ----
+  // Lucide 风格 "image" 线性图标，stroke=currentColor 继承按钮文字色
+  var IMG_SVG = '<svg class="cj-img-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:5px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+
+  function fixNotesImageButton() {
+    if (getRoute() !== '/notes') return;
+    var btns = document.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      var t = b.textContent || '';
+      // 命中"插入图片"或已改为"图片"但图标缺失 → 重新注入
+      if (t.indexOf('插入图片') >= 0 || (t.indexOf('图片') >= 0 && !b.querySelector('svg.cj-img-icon'))) {
+        b.innerHTML = IMG_SVG + '图片';
+      }
+    }
+  }
+
+  // ---- INIT ----
+  function init() {
+    injectWeightChart();
+    interceptHomeJournalCard();
+    applyHomePush();
+    fixNotesImageButton();
+
+    // Poll for route changes and React renders
+    setInterval(function(){
+      injectWeightChart();
+      enhanceOnboarding();
+      interceptHomeJournalCard();
+      applyHomePush();
+      fixNotesImageButton();
+    }, 800);
+    
+    // Listen for hash changes AND popstate (path-based routing)
+    window.addEventListener('hashchange', function(){
+      setTimeout(injectWeightChart, 300);
+    });
+    window.addEventListener('popstate', function(){
+      setTimeout(injectWeightChart, 300);
+    });
+    
+    // Fix any existing modals - only target the wrapper, NOT inner content
+    setTimeout(function(){
+      document.querySelectorAll('[role="dialog"], [class*="overlay"]').forEach(function(m){
+        // Only set on top-level wrappers, not inner content
+        if (m.parentElement && m.parentElement.tagName !== 'BODY' && m.parentElement.id !== 'root') return;
+        m.style.backgroundColor = 'rgba(255,255,255,0.98)';
+        m.style.backdropFilter = 'none';
+        m.style.webkitBackdropFilter = 'none';
+        m.style.display = 'flex';
+        m.style.alignItems = 'center';
+        m.style.justifyContent = 'center';
+        m.style.position = 'fixed';
+      });
+    }, 2000);
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  
+})();
+</script>
+</body>
 </html>
