@@ -26,11 +26,11 @@ export default function Settings() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">设置</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-brand-900">设置</h1>
 
-      <div className="glass p-4 space-y-4">
+      <div className="glass-card p-4 space-y-4">
         <div>
-          <label className="text-sm text-white/60">昵称（可选）</label>
+          <label className="text-sm text-brand-900/60">昵称（可选）</label>
           <input
             value={settings.nickname ?? ''}
             onChange={(e) => saveSettings({ nickname: e.target.value.trim() || undefined })}
@@ -39,14 +39,14 @@ export default function Settings() {
           />
         </div>
         <div>
-          <label className="text-sm text-white/60">性别</label>
+          <label className="text-sm text-brand-900/60">性别</label>
           <div className="flex gap-2 mt-1">
             {([['male', '男'], ['female', '女'], ['other', '其他']] as const).map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => saveSettings({ gender: v })}
                 className={`flex-1 py-2 rounded-lg text-sm border ${
-                  settings.gender === v ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-white/70 border-white/20'
+                  settings.gender === v ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-brand-900/70 border-white/20'
                 }`}
               >
                 {l}
@@ -55,7 +55,7 @@ export default function Settings() {
           </div>
         </div>
         <div>
-          <label className="text-sm text-white/60">身高（厘米，选填）</label>
+          <label className="text-sm text-brand-900/60">身高（厘米，选填）</label>
           <input
             type="number"
             min={100}
@@ -65,10 +65,10 @@ export default function Settings() {
             placeholder="如 170"
             className="glass-input"
           />
-          <div className="text-[11px] text-white/40 mt-1">用于计算 BMI 指数</div>
+          <div className="text-[11px] text-brand-900/40 mt-1">用于计算 BMI 指数</div>
         </div>
         <div>
-          <label className="text-sm text-white/60">专注时长（分钟）</label>
+          <label className="text-sm text-brand-900/60">专注时长（分钟）</label>
           <input
             type="number"
             min={1}
@@ -78,7 +78,7 @@ export default function Settings() {
           />
         </div>
         <div>
-          <label className="text-sm text-white/60">休息时长（分钟）</label>
+          <label className="text-sm text-brand-900/60">休息时长（分钟）</label>
           <input
             type="number"
             min={1}
@@ -88,7 +88,7 @@ export default function Settings() {
           />
         </div>
         <div>
-          <label className="text-sm text-white/60">目标体重（kg，可选）</label>
+          <label className="text-sm text-brand-900/60">目标体重（kg，可选）</label>
           <input
             type="number"
             step="0.1"
@@ -103,7 +103,7 @@ export default function Settings() {
           />
         </div>
         <div>
-          <label className="text-sm text-white/60">每日喝水目标（杯，1 杯≈250ml）</label>
+          <label className="text-sm text-brand-900/60">每日喝水目标（杯，1 杯≈250ml）</label>
           <input
             type="number"
             min={1}
@@ -120,7 +120,7 @@ export default function Settings() {
         <div className="flex items-center justify-between pt-1">
           <div className="pr-3">
             <div className="text-sm font-medium">浏览器通知</div>
-            <div className="text-xs text-white/40">
+            <div className="text-xs text-brand-900/40">
               开启后，有待办未完成时弹系统通知（需授权；离开网页不保证送达）
             </div>
           </div>
@@ -145,20 +145,20 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="glass p-4 mt-4 space-y-3">
+      <div className="glass-card p-4 mt-4 space-y-3">
         <div className="text-sm font-medium">数据备份</div>
-        <p className="text-xs text-white/40">所有数据仅存于本机浏览器。导出后可换设备或留存。</p>
+        <p className="text-xs text-brand-900/40">所有数据仅存于本机浏览器。导出后可换设备或留存。</p>
         <div className="flex gap-3">
           <button onClick={doExportJSON} className="flex-1 bg-brand-600 text-white py-2.5 rounded-lg text-sm font-medium">
             导出全部 (JSON)
           </button>
-          <button onClick={doExportCSV} className="flex-1 bg-gray-100 text-white/80 py-2.5 rounded-lg text-sm font-medium">
+          <button onClick={doExportCSV} className="flex-1 bg-gray-100 text-brand-900/80 py-2.5 rounded-lg text-sm font-medium">
             导出体重 (CSV)
           </button>
         </div>
       </div>
 
-      <div className="mt-6 text-center text-xs text-white/40">
+      <div className="mt-6 text-center text-xs text-brand-900/40">
         日常记录 · 本地优先 · v0.6
       </div>
     </div>

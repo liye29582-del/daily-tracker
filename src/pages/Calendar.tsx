@@ -60,9 +60,9 @@ export default function Calendar() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">日历</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-brand-900">日历</h1>
 
-      <div className="glass p-4">
+      <div className="glass-card p-4">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => {
@@ -72,7 +72,7 @@ export default function Calendar() {
                 setMonth(11)
               } else setMonth(m)
             }}
-            className="px-3 py-1 text-white/60"
+            className="px-3 py-1 text-brand-900/60"
           >
             ‹
           </button>
@@ -87,13 +87,13 @@ export default function Calendar() {
                 setMonth(0)
               } else setMonth(m)
             }}
-            className="px-3 py-1 text-white/60"
+            className="px-3 py-1 text-brand-900/60"
           >
             ›
           </button>
         </div>
 
-        <div className="grid grid-cols-7 text-center text-xs text-white/40 mb-1">
+        <div className="grid grid-cols-7 text-center text-xs text-brand-900/40 mb-1">
           {WEEK.map((w) => (
             <div key={w} className="py-1">
               {w}
@@ -118,7 +118,7 @@ export default function Calendar() {
                 key={d}
                 onClick={() => setSelected(d)}
                 className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs relative ${
-                  isSel ? 'bg-brand-600 text-white' : isToday ? 'bg-brand-50 text-brand-700' : 'hover:bg-gray-100 text-white/80'
+                  isSel ? 'bg-brand-600 text-white' : isToday ? 'bg-brand-50 text-brand-700' : 'hover:bg-gray-100 text-brand-900/80'
                 }`}
               >
                 <span>{Number(d.slice(8))}</span>
@@ -134,7 +134,7 @@ export default function Calendar() {
             )
           })}
         </div>
-        <div className="flex gap-3 text-[11px] text-white/40 mt-3 justify-center flex-wrap">
+        <div className="flex gap-3 text-[11px] text-brand-900/40 mt-3 justify-center flex-wrap">
           <span><i className="w-2 h-2 rounded-full bg-sky-400 inline-block mr-1" />体重</span>
           <span><i className="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1" />待办</span>
           <span><i className="w-2 h-2 rounded-full bg-amber-400 inline-block mr-1" />番茄</span>
@@ -145,9 +145,9 @@ export default function Calendar() {
       </div>
 
       {selected && (
-        <div className="mt-4 glass p-4">
+        <div className="mt-4 glass-card p-4">
           <div className="font-medium mb-2">{prettyDate(selected)}</div>
-          <ul className="text-sm text-white/70 space-y-1">
+          <ul className="text-sm text-brand-900/70 space-y-1">
             <li>⚖️ 体重：{selWeights.length ? selWeights.map((x) => x.value).join(', ') + ' kg' : '无'}</li>
             <li>✅ 待办：{selTodos.length} 条（完成 {selTodos.filter((t) => t.done).length}）</li>
             <li>🍅 专注：{selPomo.length} 个</li>

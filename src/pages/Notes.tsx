@@ -68,8 +68,8 @@ export default function Notes() {
         </button>
       </div>
 
-      <div className="glass p-4 space-y-3">
-        <div className="text-xs text-white/40">{todayStr()} · {nowTime()}</div>
+      <div className="glass-card p-4 space-y-3">
+        <div className="text-xs text-brand-900/40">{todayStr()} · {nowTime()}</div>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -103,7 +103,7 @@ export default function Notes() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => fileRef.current?.click()}
-            className="text-sm bg-gray-100 text-white/70 px-3 py-2 rounded-lg"
+            className="text-sm bg-gray-100 text-brand-900/70 px-3 py-2 rounded-lg"
           >
             🖼️ 插入图片
           </button>
@@ -120,14 +120,14 @@ export default function Notes() {
 
       {/* 回忆：查看历史 */}
       {showRecall && (
-        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4" onClick={() => { setShowRecall(false); setDetail(null) }}>
+        <div className="fixed inset-0 z-50 bg-black/25 flex items-center justify-center p-4" onClick={() => { setShowRecall(false); setDetail(null) }}>
           <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
               <div className="font-bold text-lg">回忆</div>
-              <button onClick={() => { setShowRecall(false); setDetail(null) }} className="text-white/40 text-2xl leading-none">×</button>
+              <button onClick={() => { setShowRecall(false); setDetail(null) }} className="text-brand-900/40 text-2xl leading-none">×</button>
             </div>
             {notes.length === 0 ? (
-              <div className="text-sm text-white/40 text-center py-6">还没有记录</div>
+              <div className="text-sm text-brand-900/40 text-center py-6">还没有记录</div>
             ) : (
               <div className="space-y-2">
                 {notes.map((n) => (
@@ -136,12 +136,12 @@ export default function Notes() {
                     onClick={() => setDetail(n)}
                     className="w-full text-left glass-strong rounded-xl p-3 hover:bg-gray-100 transition"
                   >
-                    <div className="flex items-center justify-between text-xs text-white/40">
+                    <div className="flex items-center justify-between text-xs text-brand-900/40">
                       <span>{n.date}</span>
                       <span>{n.time}</span>
                     </div>
                     <div className="font-medium text-sm mt-0.5 truncate">{n.title || '（无标题）'}</div>
-                    <div className="text-sm text-white/60 line-clamp-2">{n.content || ''}</div>
+                    <div className="text-sm text-brand-900/60 line-clamp-2">{n.content || ''}</div>
                     {n.images && n.images.length > 0 && (
                       <div className="flex gap-1 mt-1">
                         {n.images.slice(0, 4).map((s, i) => (
@@ -159,14 +159,14 @@ export default function Notes() {
 
       {/* 详情 */}
       {detail && (
-        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" onClick={() => setDetail(null)}>
+        <div className="fixed inset-0 z-[60] bg-black/25 flex items-center justify-center p-4" onClick={() => setDetail(null)}>
           <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs text-white/40">{detail.date} · {detail.time}</div>
-              <button onClick={() => setDetail(null)} className="text-white/40 text-2xl leading-none">×</button>
+              <div className="text-xs text-brand-900/40">{detail.date} · {detail.time}</div>
+              <button onClick={() => setDetail(null)} className="text-brand-900/40 text-2xl leading-none">×</button>
             </div>
             <div className="font-bold text-lg mb-2">{detail.title || '（无标题）'}</div>
-            <div className="text-sm text-white/80 whitespace-pre-wrap leading-relaxed">{detail.content}</div>
+            <div className="text-sm text-brand-900/80 whitespace-pre-wrap leading-relaxed">{detail.content}</div>
             {detail.images && detail.images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {detail.images.map((s, i) => (

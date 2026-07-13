@@ -120,7 +120,7 @@ export default function Journal() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">记录</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-brand-900">记录</h1>
 
       {/* 四个小卡片：点击弹窗记录 */}
       <div className="grid grid-cols-2 gap-3 mb-4">
@@ -128,19 +128,19 @@ export default function Journal() {
           <button
             key={t.key}
             onClick={() => setEntryTab(t.key)}
-            className="glass p-4 text-left hover:shadow-md hover:-translate-y-0.5 transition-all"
+            className="glass-card p-4 text-left hover:shadow-md hover:-translate-y-0.5 transition-all"
           >
             <div className="text-xl mb-1">{t.icon}</div>
-            <div className="text-xs text-white/60">{t.label}</div>
-            <div className="text-lg font-bold text-white/90 mt-0.5">{cardValue[t.key].big ?? cardValue[t.key].value}</div>
-            <div className="text-[11px] text-white/40 mt-0.5">{cardValue[t.key].sub}</div>
+            <div className="text-xs text-brand-900/60">{t.label}</div>
+            <div className="text-lg font-bold text-brand-900 mt-0.5">{cardValue[t.key].big ?? cardValue[t.key].value}</div>
+            <div className="text-[11px] text-brand-900/40 mt-0.5">{cardValue[t.key].sub}</div>
           </button>
         ))}
       </div>
 
       {/* 两张图表并排 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-        <div className="glass p-4">
+        <div className="glass-card p-4">
           <div className="text-sm font-medium mb-2">心情趋势（近 30 天）</div>
           <div className="h-44">
             {moodData.length >= 1 ? (
@@ -154,11 +154,11 @@ export default function Journal() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-white/40 text-sm">记录心情后展示</div>
+              <div className="h-full flex items-center justify-center text-brand-900/40 text-sm">记录心情后展示</div>
             )}
           </div>
         </div>
-        <div className="glass p-4">
+        <div className="glass-card p-4">
           <div className="text-sm font-medium mb-2">喝水统计（近 30 天 · ml）</div>
           <div className="h-44">
             {waterData.length >= 1 ? (
@@ -172,7 +172,7 @@ export default function Journal() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-white/40 text-sm">记录饮水后展示</div>
+              <div className="h-full flex items-center justify-center text-brand-900/40 text-sm">记录饮水后展示</div>
             )}
           </div>
         </div>
@@ -227,16 +227,16 @@ function DietBowelCalendar({
   const cells = monthGrid(hy, hm)
 
   return (
-    <div className="glass p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm font-medium">每日记录日历</div>
         <div className="flex items-center gap-1 text-sm">
-          <button onClick={() => (hm === 0 ? (setHm(11), setHy(hy - 1)) : setHm(hm - 1))} className="px-2 text-white/60">‹</button>
+          <button onClick={() => (hm === 0 ? (setHm(11), setHy(hy - 1)) : setHm(hm - 1))} className="px-2 text-brand-900/60">‹</button>
           <span className="font-medium">{hy} 年 {hm + 1} 月</span>
-          <button onClick={() => (hm === 11 ? (setHm(0), setHy(hy + 1)) : setHm(hm + 1))} className="px-2 text-white/60">›</button>
+          <button onClick={() => (hm === 11 ? (setHm(0), setHy(hy + 1)) : setHm(hm + 1))} className="px-2 text-brand-900/60">›</button>
         </div>
       </div>
-      <div className="grid grid-cols-7 text-center text-[10px] text-white/40 mb-1">
+      <div className="grid grid-cols-7 text-center text-[10px] text-brand-900/40 mb-1">
         {['日', '一', '二', '三', '四', '五', '六'].map((w) => (
           <div key={w}>{w}</div>
         ))}
@@ -247,7 +247,7 @@ function DietBowelCalendar({
             <button
               key={i}
               onClick={() => onPick(d)}
-              className="relative aspect-square rounded-lg flex items-center justify-center text-[11px] text-white/70 hover:bg-gray-50"
+              className="relative aspect-square rounded-lg flex items-center justify-center text-[11px] text-brand-900/70 hover:bg-gray-50"
             >
               {Number(d.slice(8))}
               <span className="absolute bottom-1 flex gap-0.5 flex-wrap justify-center max-w-[26px]">
@@ -264,7 +264,7 @@ function DietBowelCalendar({
           ),
         )}
       </div>
-      <div className="flex items-center gap-3 mt-2 text-[11px] text-white/40 flex-wrap">
+      <div className="flex items-center gap-3 mt-2 text-[11px] text-brand-900/40 flex-wrap">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-400 inline-block" />体重</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />待办</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />番茄</span>
@@ -304,14 +304,14 @@ function DayDetailModal({
   const dayWater = intakes.filter((r) => r.kind === 'water' && r.date === date)
   const dayBowel = bowels.find((b) => b.date === date)
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/25 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <div className="font-bold text-lg">{date}</div>
-          <button onClick={onClose} className="text-white/40 text-2xl leading-none">×</button>
+          <button onClick={onClose} className="text-brand-900/40 text-2xl leading-none">×</button>
         </div>
 
-        <ul className="text-sm text-white/70 space-y-1 mb-3">
+        <ul className="text-sm text-brand-900/70 space-y-1 mb-3">
           <li>⚖️ 体重：{dayWeight.length ? dayWeight.map((x) => x.value).join(', ') + ' kg' : '无'}</li>
           <li>✅ 待办：{dayTodos.length} 条（完成 {dayTodos.filter((t) => t.done).length}）</li>
           <li>🍅 专注：{dayPomo.length} 个</li>
@@ -322,13 +322,13 @@ function DayDetailModal({
 
         {dayDiet.length > 0 && (
           <>
-            <div className="text-xs text-white/60 mb-1">饮食（{dayDiet.length}）</div>
+            <div className="text-xs text-brand-900/60 mb-1">饮食（{dayDiet.length}）</div>
             <div className="space-y-2">
               {dayDiet.map((r) => {
                 const mealLabel = MEALS.find((m) => m.key === r.meal)?.label
                 return (
                   <div key={r.id} className="glass-strong rounded-xl p-3 text-sm">
-                    <span className="text-white/40 mr-2">{mealLabel}</span>
+                    <span className="text-brand-900/40 mr-2">{mealLabel}</span>
                     {r.text}
                   </div>
                 )
@@ -337,7 +337,7 @@ function DayDetailModal({
           </>
         )}
         {dayDiet.length === 0 && dayWater.length === 0 && (!dayBowel || dayBowel.count === 0) && dayWeight.length === 0 && dayTodos.length === 0 && dayPomo.length === 0 && dayMoods.length === 0 && (
-          <div className="text-sm text-white/40">当天无记录</div>
+          <div className="text-sm text-brand-900/40">当天无记录</div>
         )}
       </div>
     </div>
@@ -377,14 +377,14 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
   const label = TABS.find((t) => t.key === tab)?.label ?? ''
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/25 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="font-bold text-lg">记录{label}</div>
-          <button onClick={onClose} className="text-white/40 text-2xl leading-none">×</button>
+          <button onClick={onClose} className="text-brand-900/40 text-2xl leading-none">×</button>
         </div>
         {tab === 'mood' && (
           <div className="space-y-3">
@@ -401,7 +401,7 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
               {moods.filter((m) => m.date === today).slice().reverse().map((m) => (
                 <div key={m.id} className="glass-strong rounded-xl p-3 flex items-center justify-between text-sm">
                   <span>{MOODS.find((x) => x.level === m.mood)?.emoji} {m.text || ''}</span>
-                  <button onClick={async () => { if (m.id != null) await deleteMood(m.id); await load() }} className="text-white/40 hover:text-red-500 text-sm px-2">删除</button>
+                  <button onClick={async () => { if (m.id != null) await deleteMood(m.id); await load() }} className="text-brand-900/40 hover:text-red-500 text-sm px-2">删除</button>
                 </div>
               ))}
             </div>
@@ -409,7 +409,7 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
         )}
         {tab === 'water' && (
           <div className="space-y-3">
-            <div className="text-sm text-white/60">今日已喝 {waterTotal} ml（{waterCups}/{targetCups} 杯）</div>
+            <div className="text-sm text-brand-900/60">今日已喝 {waterTotal} ml（{waterCups}/{targetCups} 杯）</div>
             <div className="flex gap-2">
               {WATER_QUICK.map((c) => (
                 <button key={c} onClick={() => setPendingCups((pc) => pc + c)} className="flex-1 bg-sky-50 text-sky-700 py-2.5 rounded-lg text-sm font-medium">+{c} 杯</button>
@@ -435,7 +435,7 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
               {todayWater.slice().reverse().map((r) => (
                 <div key={r.id} className="glass-strong rounded-xl p-3 flex items-center justify-between">
                   <div className="text-sm">💧 {r.amount} ml</div>
-                  <button onClick={async () => { if (r.id != null) await deleteIntake(r.id); await load() }} className="text-white/40 hover:text-red-500 text-sm px-2">删除</button>
+                  <button onClick={async () => { if (r.id != null) await deleteIntake(r.id); await load() }} className="text-brand-900/40 hover:text-red-500 text-sm px-2">删除</button>
                 </div>
               ))}
             </div>
@@ -445,7 +445,7 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
           <div className="space-y-3">
             <div className="flex gap-2">
               {MEALS.map((m) => (
-                <button key={m.key} onClick={() => setMeal(m.key)} className={`flex-1 py-1.5 rounded-lg text-sm ${meal === m.key ? 'bg-brand-600 text-white' : 'bg-gray-100 text-white/70'}`}>{m.label}</button>
+                <button key={m.key} onClick={() => setMeal(m.key)} className={`flex-1 py-1.5 rounded-lg text-sm ${meal === m.key ? 'bg-brand-600 text-white' : 'bg-gray-100 text-brand-900/70'}`}>{m.label}</button>
               ))}
             </div>
             <input value={dietText} onChange={(e) => setDietText(e.target.value)} placeholder="吃了什么？" className="w-full border border-white/20 rounded-lg px-3 py-2 outline-none focus:border-brand-400" />
@@ -455,8 +455,8 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
                 const mealLabel = MEALS.find((m) => m.key === r.meal)?.label
                 return (
                   <div key={r.id} className="glass-strong rounded-xl p-3 flex items-center justify-between">
-                    <div className="text-sm"><span className="text-white/40 mr-2">{mealLabel}</span>{r.text}</div>
-                    <button onClick={async () => { if (r.id != null) await deleteIntake(r.id); await load() }} className="text-white/40 hover:text-red-500 text-sm px-2">删除</button>
+                    <div className="text-sm"><span className="text-brand-900/40 mr-2">{mealLabel}</span>{r.text}</div>
+                    <button onClick={async () => { if (r.id != null) await deleteIntake(r.id); await load() }} className="text-brand-900/40 hover:text-red-500 text-sm px-2">删除</button>
                   </div>
                 )
               })}
@@ -471,13 +471,13 @@ function RecordModal({ tab, onClose }: { tab: Tab; onClose: () => void }) {
                 今日已排便
               </label>
               <input type="number" min={1} value={bowelCount} onChange={(e) => setBowelCount(Math.max(1, Number(e.target.value) || 1))} disabled={!bowelOk} className="w-20 border border-white/20 rounded-lg px-2 py-1 outline-none focus:border-brand-400 disabled:bg-gray-50" />
-              <span className="text-xs text-white/40">次（不填默认 1）</span>
+              <span className="text-xs text-brand-900/40">次（不填默认 1）</span>
             </div>
             <button onClick={async () => { await saveBowel(today, bowelOk ? bowelCount : 0); await load() }} className="w-full glass-btn-primary">保存排便</button>
             {bowels.slice().reverse().slice(0, 5).map((b) => (
               <div key={b.id} className="glass-strong rounded-xl p-3 flex items-center justify-between text-sm">
                 <span>{b.date} · {b.count > 0 ? `${b.count} 次` : '未记录'}</span>
-                <button onClick={async () => { if (b.id != null) await saveBowel(b.date, 0); await load() }} className="text-white/40 hover:text-red-500 text-sm px-2">清除</button>
+                <button onClick={async () => { if (b.id != null) await saveBowel(b.date, 0); await load() }} className="text-brand-900/40 hover:text-red-500 text-sm px-2">清除</button>
               </div>
             ))}
           </div>

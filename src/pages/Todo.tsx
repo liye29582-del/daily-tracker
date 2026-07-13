@@ -24,13 +24,13 @@ export default function Todo() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">待办</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-brand-900">待办</h1>
 
-      <div className="glass p-4 flex items-center justify-between mb-4">
-        <div className="text-sm text-white/60">总完成率</div>
+      <div className="glass-card p-4 flex items-center justify-between mb-4">
+        <div className="text-sm text-brand-900/60">总完成率</div>
         <div className="font-semibold">
           <span className="text-emerald-500 text-xl">{rate}%</span>
-          <span className="text-xs text-white/40 ml-2">
+          <span className="text-xs text-brand-900/40 ml-2">
             {done}/{total}
           </span>
         </div>
@@ -92,10 +92,10 @@ function TodoCard({
   }
 
   return (
-    <div className="glass p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="font-medium">{title}</div>
-        <div className="text-xs text-white/40">
+        <div className="text-xs text-brand-900/40">
           {doneN}/{items.length}
         </div>
       </div>
@@ -114,7 +114,7 @@ function TodoCard({
                   key={v}
                   onClick={() => setKind(v)}
                   className={`px-3 py-1 rounded-full text-xs border ${
-                    kind === v ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-white/70 border-white/20'
+                    kind === v ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-brand-900/70 border-white/20'
                   }`}
                 >
                   {l}
@@ -122,7 +122,7 @@ function TodoCard({
               ))}
             </div>
             {kind === 'habit' && (
-              <label className="flex items-center gap-1 text-xs text-white/60">
+              <label className="flex items-center gap-1 text-xs text-brand-900/60">
                 目标
                 <input
                   type="number"
@@ -165,10 +165,10 @@ function TodoCard({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <div className={`font-medium text-sm ${t.done ? 'line-through text-white/40' : ''}`}>{t.title}</div>
-                <div className="text-xs text-white/40 flex gap-2 flex-wrap items-center">
-                  {t.tag && <span className="glass-btn-primary text-xs px-1.5 rounded">{t.tag}</span>}
-                  {t.kind === 'habit' && <span className="glass text-white/70 text-xs px-1.5 rounded">习惯</span>}
+                <div className={`font-medium text-sm ${t.done ? 'line-through text-brand-900/40' : ''}`}>{t.title}</div>
+                <div className="text-xs text-brand-900/40 flex gap-2 flex-wrap items-center">
+                  {t.tag && <span className="glass-btn-accent text-xs px-1.5 rounded">{t.tag}</span>}
+                  {t.kind === 'habit' && <span className="glass text-brand-900/70 text-xs px-1.5 rounded">习惯</span>}
                   {t.focusSeconds ? <span>🍅 {fmtDuration(t.focusSeconds)}</span> : null}
                 </div>
               </div>
@@ -177,7 +177,7 @@ function TodoCard({
                   await deleteTodo(t.id!)
                   await onChanged()
                 }}
-                className="text-white/40 hover:text-red-500 text-sm px-2"
+                className="text-brand-900/40 hover:text-red-500 text-sm px-2"
               >
                 删除
               </button>
@@ -186,7 +186,7 @@ function TodoCard({
             {t.kind === 'habit' && t.goalDays ? <HabitProgress t={t} onChanged={onChanged} /> : null}
           </div>
         ))}
-        {items.length === 0 && <div className="text-center text-white/40 text-xs py-3">暂无</div>}
+        {items.length === 0 && <div className="text-center text-brand-900/40 text-xs py-3">暂无</div>}
       </div>
     </div>
   )
@@ -217,10 +217,10 @@ function HabitProgress({ t, onChanged }: { t: TodoT; onChanged: () => void }) {
     return (
       <div className="mt-2 pl-8">
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-2.5 glass rounded-full overflow-hidden">
-            <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+          <div className="flex-1 h-2.5 glass-card rounded-full overflow-hidden">
+            <div className="h-full bg-brand-600 rounded-full transition-all" style={{ width: `${pct}%` }} />
           </div>
-          <span className="text-xs text-white/60 whitespace-nowrap">
+          <span className="text-xs text-brand-900/60 whitespace-nowrap">
             {inPeriod}/{goal} · {pct}%
           </span>
         </div>
@@ -238,13 +238,13 @@ function HabitProgress({ t, onChanged }: { t: TodoT; onChanged: () => void }) {
             <button
               key={i}
               onClick={() => (d ? toggleDay(d) : toggleDay(today))}
-              className={`w-5 h-5 rounded-md transition ${d ? 'bg-brand-500 hover:bg-brand-600 cursor-pointer' : 'bg-white/20 hover:bg-brand-300 cursor-pointer'}`}
+              className={`w-5 h-5 rounded-md transition ${d ? 'bg-brand-600 hover:bg-brand-600 cursor-pointer' : 'bg-brand-900/15 hover:bg-brand-300 cursor-pointer'}`}
               title={d ? `已打卡 ${d}（点击取消）` : '点击「今日打卡」'}
               aria-label={d ? `已打卡 ${d}` : '今日打卡'}
             />
           )
         })}
-        <span className="text-xs text-white/60 ml-1">
+        <span className="text-xs text-brand-900/60 ml-1">
           {inPeriod}/{goal}
         </span>
       </div>
