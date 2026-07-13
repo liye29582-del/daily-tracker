@@ -91,12 +91,12 @@ export default function Focus() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">番茄钟</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">番茄钟</h1>
 
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm text-center">
-        <div className="inline-flex bg-gray-100 rounded-full p-1 mb-4">
-          <button onClick={() => switchMode('focus')} className={`px-4 py-1.5 rounded-full text-sm ${timer.mode === 'focus' ? 'bg-brand-600 text-white' : 'text-gray-600'}`}>专注</button>
-          <button onClick={() => switchMode('break')} className={`px-4 py-1.5 rounded-full text-sm ${timer.mode === 'break' ? 'bg-brand-600 text-white' : 'text-gray-600'}`}>休息</button>
+      <div className="bg-white rounded-2xl p-6 border border-white/10 shadow-sm text-center">
+        <div className="inline-flex glass rounded-full p-1 mb-4">
+          <button onClick={() => switchMode('focus')} className={`px-4 py-1.5 rounded-full text-sm ${timer.mode === 'focus' ? 'bg-brand-600 text-white' : 'text-white/70'}`}>专注</button>
+          <button onClick={() => switchMode('break')} className={`px-4 py-1.5 rounded-full text-sm ${timer.mode === 'break' ? 'bg-brand-600 text-white' : 'text-white/70'}`}>休息</button>
         </div>
 
         <div className="relative w-48 h-48 mx-auto">
@@ -106,7 +106,7 @@ export default function Focus() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-4xl font-bold tabular-nums">{mm}:{ss}</div>
-            <div className="text-xs text-gray-400 mt-1">{timer.mode === 'focus' ? '专注中' : '休息中'}</div>
+            <div className="text-xs text-white/40 mt-1">{timer.mode === 'focus' ? '专注中' : '休息中'}</div>
           </div>
         </div>
 
@@ -114,15 +114,15 @@ export default function Focus() {
           {timer.running ? (
             <button onClick={pauseTimer} className="flex-1 bg-amber-500 text-white py-2.5 rounded-lg font-medium">暂停</button>
           ) : (
-            <button onClick={startTimer} className="flex-1 bg-brand-600 text-white py-2.5 rounded-lg font-medium">开始</button>
+            <button onClick={startTimer} className="flex-1 glass-btn-primary">开始</button>
           )}
-          <button onClick={resetTimer} className="px-5 bg-gray-100 text-gray-600 py-2.5 rounded-lg font-medium">重置</button>
+          <button onClick={resetTimer} className="px-5 bg-gray-100 text-white/70 py-2.5 rounded-lg font-medium">重置</button>
         </div>
 
         {timer.mode === 'focus' && (
           <div className="mt-4 text-left">
-            <label className="text-xs text-gray-500">绑定待办（可选）</label>
-            <select value={timer.todoId ?? ''} onChange={(e) => selectTodo(e.target.value ? Number(e.target.value) : undefined)} className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400 bg-white">
+            <label className="text-xs text-white/60">绑定待办（可选）</label>
+            <select value={timer.todoId ?? ''} onChange={(e) => selectTodo(e.target.value ? Number(e.target.value) : undefined)} className="glass-input bg-white">
               <option value="">不绑定</option>
               {todos.map((t) => (
                 <option key={t.id} value={t.id}>{t.title}</option>
@@ -132,18 +132,18 @@ export default function Focus() {
         )}
       </div>
 
-      <div className="mt-4 bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center justify-between">
-        <div className="text-sm text-gray-500">今日专注</div>
+      <div className="mt-4 glass p-4 flex items-center justify-between">
+        <div className="text-sm text-white/60">今日专注</div>
         <div className="font-semibold">{todayCount} 个 · {todaySeconds > 0 ? fmtDuration(todaySeconds) : '0'}</div>
       </div>
 
       {/* 近期专注 */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mt-4">
+      <div className="glass p-4 mt-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-sm font-medium">近期专注（分钟）</div>
-          <div className="flex bg-gray-100 rounded-full p-0.5 text-xs">
+          <div className="flex glass rounded-full p-0.5 text-xs">
             {([['7', '近7天'], ['30', '近30天']] as const).map(([v, l]) => (
-              <button key={v} onClick={() => setChartRange(v)} className={`px-3 py-1 rounded-full ${chartRange === v ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-500'}`}>{l}</button>
+              <button key={v} onClick={() => setChartRange(v)} className={`px-3 py-1 rounded-full ${chartRange === v ? 'bg-white text-brand-700 shadow-sm' : 'text-white/60'}`}>{l}</button>
             ))}
           </div>
         </div>
@@ -161,12 +161,12 @@ export default function Focus() {
       </div>
 
       {/* 专注热力 */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mt-4">
+      <div className="glass p-4 mt-4">
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-medium">专注热力</div>
-          <div className="flex bg-gray-100 rounded-full p-0.5 text-xs">
+          <div className="flex glass rounded-full p-0.5 text-xs">
             {([['month', '每月'], ['year', '每年']] as const).map(([v, l]) => (
-              <button key={v} onClick={() => setHeatMode(v)} className={`px-3 py-1 rounded-full ${heatMode === v ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-500'}`}>{l}</button>
+              <button key={v} onClick={() => setHeatMode(v)} className={`px-3 py-1 rounded-full ${heatMode === v ? 'bg-white text-brand-700 shadow-sm' : 'text-white/60'}`}>{l}</button>
             ))}
           </div>
         </div>
@@ -174,17 +174,17 @@ export default function Focus() {
         {heatMode === 'month' ? (
           <div>
             <div className="flex items-center justify-between mb-2 text-sm">
-              <button onClick={() => (hm === 0 ? (setHm(11), setHy(hy - 1)) : setHm(hm - 1))} className="px-2 text-gray-500">‹</button>
+              <button onClick={() => (hm === 0 ? (setHm(11), setHy(hy - 1)) : setHm(hm - 1))} className="px-2 text-white/60">‹</button>
               <span className="font-medium">{hy} 年 {hm + 1} 月</span>
-              <button onClick={() => (hm === 11 ? (setHm(0), setHy(hy + 1)) : setHm(hm + 1))} className="px-2 text-gray-500">›</button>
+              <button onClick={() => (hm === 11 ? (setHm(0), setHy(hy + 1)) : setHm(hm + 1))} className="px-2 text-white/60">›</button>
             </div>
-            <div className="grid grid-cols-7 text-center text-[10px] text-gray-400 mb-1">
+            <div className="grid grid-cols-7 text-center text-[10px] text-white/40 mb-1">
               {['日', '一', '二', '三', '四', '五', '六'].map((w) => <div key={w}>{w}</div>)}
             </div>
             <div className="grid grid-cols-7 gap-1">
               {monthCells.map((d, i) =>
                 d ? (
-                  <div key={i} title={`${d} · ${Math.round((fMap.get(d) ?? 0) / 60)} 分`} className="aspect-square rounded-md flex items-center justify-center text-[9px] text-gray-600" style={{ background: heatColor(fMap.get(d) ?? 0) }}>
+                  <div key={i} title={`${d} · ${Math.round((fMap.get(d) ?? 0) / 60)} 分`} className="aspect-square rounded-md flex items-center justify-center text-[9px] text-white/70" style={{ background: heatColor(fMap.get(d) ?? 0) }}>
                     {Number(d.slice(8))}
                   </div>
                 ) : (
@@ -196,9 +196,9 @@ export default function Focus() {
         ) : (
           <div>
             <div className="flex items-center justify-between mb-2 text-sm">
-              <button onClick={() => setHy(hy - 1)} className="px-2 text-gray-500">‹</button>
+              <button onClick={() => setHy(hy - 1)} className="px-2 text-white/60">‹</button>
               <span className="font-medium">{hy} 年</span>
-              <button onClick={() => setHy(hy + 1)} className="px-2 text-gray-500">›</button>
+              <button onClick={() => setHy(hy + 1)} className="px-2 text-white/60">›</button>
             </div>
             <div className="flex gap-1 overflow-x-auto">
               {yearWeeks.map((w, i) => (
@@ -213,7 +213,7 @@ export default function Focus() {
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-1 mt-2 text-[10px] text-gray-400">
+            <div className="flex items-center gap-1 mt-2 text-[10px] text-white/40">
               <span>少</span>
               {[0, 30, 60, 90, 120].map((m) => (
                 <span key={m} className="w-3.5 h-3.5 rounded-sm" style={{ background: heatColor(m) }} />

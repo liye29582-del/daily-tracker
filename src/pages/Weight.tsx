@@ -70,61 +70,61 @@ export default function Weight() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">体重</h1>
+      <h1 className="font-serif text-2xl font-bold mb-4 text-white/90">体重</h1>
 
       {/* 概览 */}
       <div className="grid grid-cols-4 gap-3 mb-4">
-        <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
+        <div className="glass text-center p-3">
           <div className="text-xl font-bold text-sky-600">{latest ?? '—'}</div>
-          <div className="text-xs text-gray-400">当前 (kg)</div>
+          <div className="text-xs text-white/40">当前 (kg)</div>
         </div>
-        <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
-          <div className="text-xl font-bold text-gray-700">{settings.targetWeight ?? '—'}</div>
-          <div className="text-xs text-gray-400">目标 (kg)</div>
+        <div className="glass text-center p-3">
+          <div className="text-xl font-bold text-white/80">{settings.targetWeight ?? '—'}</div>
+          <div className="text-xs text-white/40">目标 (kg)</div>
         </div>
-        <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
-          <div className={`text-xl font-bold ${lost != null && lost > 0 ? 'text-emerald-500' : lost != null && lost < 0 ? 'text-rose-500' : 'text-gray-700'}`}>
+        <div className="glass text-center p-3">
+          <div className={`text-xl font-bold ${lost != null && lost > 0 ? 'text-emerald-500' : lost != null && lost < 0 ? 'text-rose-500' : 'text-white/80'}`}>
             {lost != null ? (lost > 0 ? `-${lost}` : lost < 0 ? `+${Math.abs(lost)}` : '0') : '—'}
           </div>
-          <div className="text-xs text-gray-400">{lost != null && lost < 0 ? '累计增重 (kg)' : '累计已减 (kg)'}</div>
+          <div className="text-xs text-white/40">{lost != null && lost < 0 ? '累计增重 (kg)' : '累计已减 (kg)'}</div>
         </div>
-        <div className="bg-white rounded-2xl p-3 border border-gray-100 text-center">
+        <div className="glass text-center p-3">
           <div className={`text-xl font-bold ${
-            latestBmi != null ? (latestBmi < 18.5 ? 'text-sky-500' : latestBmi < 25 ? 'text-emerald-500' : latestBmi < 30 ? 'text-amber-500' : 'text-rose-500') : 'text-gray-700'
+            latestBmi != null ? (latestBmi < 18.5 ? 'text-sky-500' : latestBmi < 25 ? 'text-emerald-500' : latestBmi < 30 ? 'text-amber-500' : 'text-rose-500') : 'text-white/80'
           }`}>
             {latestBmi ?? '—'}
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-white/40">
             BMI {latestBmi != null ? `· ${bmiLabel_(latestBmi)}` : '(需设定身高)'}
           </div>
         </div>
       </div>
 
-      <form onSubmit={onSubmit} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+      <form onSubmit={onSubmit} className="glass p-4 space-y-3">
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="text-xs text-gray-500">体重 (kg)</label>
-            <input type="number" step="0.1" value={value} onChange={(e) => setValue(e.target.value)} placeholder="如 62.5" className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400" required />
+            <label className="text-xs text-white/60">体重 (kg)</label>
+            <input type="number" step="0.1" value={value} onChange={(e) => setValue(e.target.value)} placeholder="如 62.5" className="glass-input" required />
           </div>
           <div className="w-40">
-            <label className="text-xs text-gray-500">日期</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400" />
+            <label className="text-xs text-white/60">日期</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="glass-input" />
           </div>
         </div>
         <div>
-          <label className="text-xs text-gray-500">备注（可选）</label>
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如 晨起空腹" className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400" />
+          <label className="text-xs text-white/60">备注（可选）</label>
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如 晨起空腹" className="glass-input" />
         </div>
-        <button className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-medium">保存记录</button>
+        <button className="w-full glass-btn-primary">保存记录</button>
       </form>
 
       {records.length > 1 && (
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mt-4">
+        <div className="glass p-4 mt-4">
           {/* BMI 趋势图 */}
           {settings.height ? (
             <div className="mb-5">
               <div className="text-sm font-medium mb-2">BMI 指数 · 科学范围参考</div>
-              <div className="flex items-center gap-3 mb-2 text-[11px] text-gray-500 flex-wrap">
+              <div className="flex items-center gap-3 mb-2 text-[11px] text-white/60 flex-wrap">
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-sky-200 inline-block" />偏瘦 (&lt;18.5)</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-200 inline-block" />理想 (18.5-25)</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 inline-block" />偏胖 (25-30)</span>
@@ -150,16 +150,16 @@ export default function Weight() {
               </div>
             </div>
           ) : (
-            <div className="mb-5 text-center text-sm text-gray-400">
+            <div className="mb-5 text-center text-sm text-white/40">
               🏋️ 去「设置」填写身高，即可查看 BMI 指数与科学范围参考
             </div>
           )}
-          <div className="border-t border-gray-100 pt-4">
+          <div className="border-t border-white/10 pt-4">
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-medium">体重趋势</div>
-              <div className="flex bg-gray-100 rounded-full p-0.5 text-xs">
+              <div className="flex glass rounded-full p-0.5 text-xs">
                 {([['7', '7天'], ['30', '30天'], ['90', '90天'], ['all', '总计']] as const).map(([v, l]) => (
-                  <button key={v} onClick={() => setRange(v)} className={`px-2.5 py-1 rounded-full ${range === v ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-500'}`}>
+                  <button key={v} onClick={() => setRange(v)} className={`px-2.5 py-1 rounded-full ${range === v ? 'bg-white text-brand-700 shadow-sm' : 'text-white/60'}`}>
                     {l}
                   </button>
                 ))}
@@ -185,10 +185,10 @@ export default function Weight() {
 
       <div className="mt-4 space-y-2">
         {sorted.map((r) => (
-          <div key={r.id} className="bg-white rounded-xl p-3 border border-gray-100 flex items-center justify-between">
+          <div key={r.id} className="glass p-3 flex items-center justify-between">
             <div>
               <div className="font-medium">{r.value} kg</div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-white/40">
                 {r.date}
                 {r.note ? ` · ${r.note}` : ''}
               </div>
@@ -198,13 +198,13 @@ export default function Weight() {
                 if (r.id != null) await deleteWeight(r.id)
                 await refresh()
               }}
-              className="text-gray-400 hover:text-red-500 text-sm px-2"
+              className="text-white/40 hover:text-red-500 text-sm px-2"
             >
               删除
             </button>
           </div>
         ))}
-        {sorted.length === 0 && <div className="text-center text-gray-400 text-sm py-8">还没有记录，先记一条吧</div>}
+        {sorted.length === 0 && <div className="text-center text-white/40 text-sm py-8">还没有记录，先记一条吧</div>}
       </div>
     </div>
   )

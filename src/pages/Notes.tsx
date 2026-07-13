@@ -68,27 +68,27 @@ export default function Notes() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
-        <div className="text-xs text-gray-400">{todayStr()} · {nowTime()}</div>
+      <div className="glass p-4 space-y-3">
+        <div className="text-xs text-white/40">{todayStr()} · {nowTime()}</div>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="标题（可选）"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400 font-medium"
+          className="w-full border border-white/20 rounded-lg px-3 py-2 outline-none focus:border-brand-400 font-medium"
         />
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="突然想到的灵感、随记、日记…"
           rows={5}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400 resize-none"
+          className="w-full border border-white/20 rounded-lg px-3 py-2 outline-none focus:border-brand-400 resize-none"
         />
 
         {images.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {images.map((src, i) => (
               <div key={i} className="relative">
-                <img src={src} alt="" className="w-20 h-20 object-cover rounded-lg border border-gray-100" />
+                <img src={src} alt="" className="w-20 h-20 object-cover rounded-lg border border-white/10" />
                 <button
                   onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
                   className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white w-5 h-5 rounded-full text-xs leading-none"
@@ -103,7 +103,7 @@ export default function Notes() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => fileRef.current?.click()}
-            className="text-sm bg-gray-100 text-gray-600 px-3 py-2 rounded-lg"
+            className="text-sm bg-gray-100 text-white/70 px-3 py-2 rounded-lg"
           >
             🖼️ 插入图片
           </button>
@@ -124,24 +124,24 @@ export default function Notes() {
           <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
               <div className="font-bold text-lg">回忆</div>
-              <button onClick={() => { setShowRecall(false); setDetail(null) }} className="text-gray-400 text-2xl leading-none">×</button>
+              <button onClick={() => { setShowRecall(false); setDetail(null) }} className="text-white/40 text-2xl leading-none">×</button>
             </div>
             {notes.length === 0 ? (
-              <div className="text-sm text-gray-400 text-center py-6">还没有记录</div>
+              <div className="text-sm text-white/40 text-center py-6">还没有记录</div>
             ) : (
               <div className="space-y-2">
                 {notes.map((n) => (
                   <button
                     key={n.id}
                     onClick={() => setDetail(n)}
-                    className="w-full text-left bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition"
+                    className="w-full text-left glass-strong rounded-xl p-3 hover:bg-gray-100 transition"
                   >
-                    <div className="flex items-center justify-between text-xs text-gray-400">
+                    <div className="flex items-center justify-between text-xs text-white/40">
                       <span>{n.date}</span>
                       <span>{n.time}</span>
                     </div>
                     <div className="font-medium text-sm mt-0.5 truncate">{n.title || '（无标题）'}</div>
-                    <div className="text-sm text-gray-500 line-clamp-2">{n.content || ''}</div>
+                    <div className="text-sm text-white/60 line-clamp-2">{n.content || ''}</div>
                     {n.images && n.images.length > 0 && (
                       <div className="flex gap-1 mt-1">
                         {n.images.slice(0, 4).map((s, i) => (
@@ -162,15 +162,15 @@ export default function Notes() {
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" onClick={() => setDetail(null)}>
           <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs text-gray-400">{detail.date} · {detail.time}</div>
-              <button onClick={() => setDetail(null)} className="text-gray-400 text-2xl leading-none">×</button>
+              <div className="text-xs text-white/40">{detail.date} · {detail.time}</div>
+              <button onClick={() => setDetail(null)} className="text-white/40 text-2xl leading-none">×</button>
             </div>
             <div className="font-bold text-lg mb-2">{detail.title || '（无标题）'}</div>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{detail.content}</div>
+            <div className="text-sm text-white/80 whitespace-pre-wrap leading-relaxed">{detail.content}</div>
             {detail.images && detail.images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {detail.images.map((s, i) => (
-                  <img key={i} src={s} alt="" className="w-24 h-24 object-cover rounded-lg border border-gray-100" />
+                  <img key={i} src={s} alt="" className="w-24 h-24 object-cover rounded-lg border border-white/10" />
                 ))}
               </div>
             )}
